@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: reservation-event-processor
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+  task:
+    scheduling:
+      pool:
+        size: 2 # Thread numbers for the scheduler jobs
+      thread-name-prefix: event-processor-task-
+  webflux:
+    http-client:
+      ssl:
+        verify-hostname: false
+  rest:
+    security:
+      trust-all: true
+
+server:
+  port: ${SERVER_PORT}
+
+# Keycloak Configuration - Using the same client as reservation-be
+keycloak:
+  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL}
+  realm: ${KEYCLOAK_REALM}
+  resource: ${KEYCLOAK_REALM}-app
+  credentials:
+    secret: ${KEYCLOAK_CLIENT_SECRET}
+  # Admin credentials for accessing Keycloak API
+  admin:
+    username: ${KEYCLOAK_ADMIN_USER}
+    password: ${KEYCLOAK_ADMIN_PASSWORD}
+
+logging:
+  level:
+    it.polito.cloudresources.eventprocessor: INFO
+    org.hibernate.SQL: TRACE
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info # Expose health and info endpoints
+  endpoint:
+    health:
+      probes:
+        enabled: true # Enable Kubernetes probes

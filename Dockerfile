@@ -26,8 +26,7 @@ WORKDIR /app
 # Copy the packaged jar file from the builder stage
 COPY --from=builder /app/target/reservation-event-processor-*.jar app.jar
 
-# Expose port (if needed, though likely not for a processor)
-# EXPOSE 8080
+EXPOSE 8080
 
 # Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
