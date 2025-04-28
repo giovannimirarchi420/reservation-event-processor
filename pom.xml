@@ -2,22 +2,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version> <!-- Assicurati che sia la stessa versione di reservation-be -->
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+
     <groupId>it.polito.cloudresources</groupId>
     <artifactId>reservation-event-processor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2</version>
     <name>reservation-event-processor</name>
     <description>Service for processing reservation events</description>
+    
     <properties>
         <java.version>23</java.version>
         <keycloak.version>23.0.6</keycloak.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.4</version>
+        <relativePath/>
+    </parent>
+    
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
