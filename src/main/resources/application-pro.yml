@@ -45,8 +45,6 @@ keycloak:
 logging:
   level:
     it.polito.cloudresources.eventprocessor: INFO
-    org.hibernate.SQL: TRACE
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 # Actuator configuration
 management:

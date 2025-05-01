@@ -49,8 +49,8 @@ event:
 logging:
   level:
     it.polito.cloudresources.eventprocessor: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    # org.hibernate.SQL: DEBUG
+    # org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
   port: 8081

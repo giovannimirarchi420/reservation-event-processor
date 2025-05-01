@@ -1,30 +1,16 @@
-# Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:23-jdk as builder
+FROM maven:3.9.9-eclipse-temurin-23-alpine AS build
 
-# Set the working directory
 WORKDIR /app
-
-# Copy the Maven wrapper and the pom.xml
-COPY mvnw .
-COPY .mvn/ .mvn/
-COPY pom.xml .
-
-# Download dependencies (this layer will be cached)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the project source
-COPY src src/
-
-# Package the application
-RUN ./mvnw package -DskipTests
+COPY . .
+RUN ./mvnw clean package -Ppro-oracle -DskipTests
 
 # Use a smaller base image for the final stage
 FROM eclipse-temurin:23-jre
 
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# Copy the packaged jar file from the builder stage
-COPY --from=builder /app/target/reservation-event-processor-*.jar app.jar
+ENV SPRING_PROFILES_ACTIVE=pro
 
 EXPOSE 8080
 
