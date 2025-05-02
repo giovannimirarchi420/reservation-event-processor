@@ -5,7 +5,7 @@
 
     <groupId>it.polito.cloudresources</groupId>
     <artifactId>reservation-event-processor</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.6</version>
     <name>reservation-event-processor</name>
     <description>Service for processing reservation events</description>
     
@@ -101,8 +101,9 @@
                 </configuration>
             </plugin>
         </plugins>
-        
-        <profiles>
+    </build>
+
+    <profiles>
         <!-- Production profiles -->
         <profile>
             <id>pro-oracle</id>
@@ -136,6 +137,5 @@
             </properties>
         </profile>
     </profiles>
-    </build>
 
 </project>
