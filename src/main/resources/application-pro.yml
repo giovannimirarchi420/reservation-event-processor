@@ -13,33 +13,18 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: UTC
-  task:
-    scheduling:
-      pool:
-        size: 2 # Thread numbers for the scheduler jobs
-      thread-name-prefix: event-processor-task-
-  webflux:
-    http-client:
-      ssl:
-        verify-hostname: false
-  rest:
-    security:
-      trust-all: true
 
 server:
   port: ${SERVER_PORT}
 
-# Keycloak Configuration - Using the same client as reservation-be
+# Keycloak Configuration
 keycloak:
   auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL}
   realm: ${KEYCLOAK_REALM}
-  resource: ${KEYCLOAK_REALM}-app
-  credentials:
+  resource: ${KEYCLOAK_CLIENT_ID}
+  credentials: 
     secret: ${KEYCLOAK_CLIENT_SECRET}
-  # Admin credentials for accessing Keycloak API
-  admin:
-    username: ${KEYCLOAK_ADMIN_USER}
-    password: ${KEYCLOAK_ADMIN_PASSWORD}
+  use-resource-role-mappings: true
 
 logging:
   level:

@@ -27,18 +27,6 @@ spring:
     security:
       trust-all: true
 
-# Keycloak Configuration - Using the same client as reservation-be
-keycloak:
-  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://keycloak:8180}
-  realm: ${KEYCLOAK_REALM:resource-management}
-  resource: ${KEYCLOAK_REALM:resource-management}-app
-  credentials:
-    secret: ${KEYCLOAK_CLIENT_SECRET:a-super-mega-secret}
-  # Admin credentials for accessing Keycloak API
-  admin:
-    username: ${KEYCLOAK_ADMIN_USER:admin}
-    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
-
 # Custom configuration for the processor
 event:
   processor:
