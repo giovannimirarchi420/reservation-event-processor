@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false) // Adjust if inheriting from a base class
 public class WebhookConfig {
+    
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Assuming ID is managed by reservation-be, not generated here
 
     private String name;
