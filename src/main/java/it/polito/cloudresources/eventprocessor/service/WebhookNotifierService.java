@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets; // Import StandardCharsets
 import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.List;
@@ -182,10 +183,12 @@ public class WebhookNotifierService {
         if (webhook.getSecret() != null && !webhook.getSecret().isEmpty()) {
             try {
                 Mac sha256Hmac = Mac.getInstance("HmacSHA256");
-                SecretKeySpec secretKeySpec = new SecretKeySpec(webhook.getSecret().getBytes(), "HmacSHA256");
+                // Use UTF-8 for the secret bytes
+                SecretKeySpec secretKeySpec = new SecretKeySpec(webhook.getSecret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
                 sha256Hmac.init(secretKeySpec);
-                byte[] hash = sha256Hmac.doFinal(payloadJson.getBytes());
-                String signature = Base64.getEncoder().encodeToString(hash);
+                // Use UTF-8 for the payload bytes
+                byte[] hash = sha256Hmac.doFinal(payloadJson.getBytes(StandardCharsets.UTF_8));
+                String signature = new String(Base64.getEncoder().encode(hash), StandardCharsets.UTF_8);
                 headers.add("X-Webhook-Signature", signature);
                 log.debug("Added signature header for webhook {}", webhook.getName());
             } catch (Exception e) {
