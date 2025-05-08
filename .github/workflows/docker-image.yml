@@ -1,0 +1,56 @@
+name: Build and Push Docker Images
+
+on:
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Install xmllint (part of libxml2-utils)
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      # Step 2: Checkout the source code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 3: Read the version from the pom.xml file
+      - name: Extract version from pom.xml
+        id: extract_version
+        run: |
+          VERSION=$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          echo "VERSION=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      # Step 4: Log in to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # DockerHub username stored as a secret
+          password: ${{ secrets.DOCKER_PASSWORD }} # DockerHub password stored as a secret
+
+      # Step 5: Build and push Docker image for DB_TYPE=postgres
+      - name: Build and push Docker image (Postgres)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/reservation-event-processor:${{ env.version }}-postgres
+          build-args: |
+            DB_TYPE=postgres
+
+      # Step 6: Build and push Docker image for DB_TYPE=oracle
+      - name: Build and push Docker image (Oracle)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/reservation-event-processor:${{ env.version }}-oracle
+          build-args: |
+            DB_TYPE=oracle
+
+      # Step 7 (Optional): Log out of DockerHub
+      - name: Log out of DockerHub
+        run: docker logout
