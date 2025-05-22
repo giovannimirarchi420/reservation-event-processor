@@ -5,13 +5,13 @@
 
     <groupId>it.polito.cloudresources</groupId>
     <artifactId>reservation-event-processor</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <name>reservation-event-processor</name>
     <description>Service for processing reservation events</description>
     
     <properties>
         <java.version>23</java.version>
-        <keycloak.version>23.0.6</keycloak.version>
+        <keycloak.version>16.1.1</keycloak.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
 
