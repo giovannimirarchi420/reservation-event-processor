@@ -2,6 +2,8 @@ package it.polito.cloudresources.eventprocessor.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.GroupResource;
@@ -12,8 +14,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,16 +42,20 @@ public class KeycloakService {
     @Value("${keycloak.admin.password:admin}")
     private String adminPassword;
 
+    @Value("${keycloak.credentials.secret}")
+    private String clientSecret;
+
+
     /**
      * Creates an admin Keycloak client
      */
     protected Keycloak getKeycloakClient() {
         return KeycloakBuilder.builder()
                 .serverUrl(authServerUrl)
-                .realm("master")
-                .clientId("admin-cli")
-                .username(adminUsername)
-                .password(adminPassword)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .build();
     }
 
@@ -75,31 +79,6 @@ public class KeycloakService {
             return Optional.ofNullable(user);
         } catch (Exception e) {
             log.error("Error fetching user representation from Keycloak for user {}", userId, e);
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get SSH key for a user
-     * @param userId The Keycloak user ID
-     * @return Optional containing the SSH key if found
-     */
-    public Optional<String> getUserSshKey(String userId) {
-        try {
-            log.debug("Fetching SSH key for user ID '{}'", userId);
-            UserResource userResource = getRealmResource().users().get(userId);
-            UserRepresentation user = userResource.toRepresentation();
-            
-            Map<String, List<String>> attributes = user.getAttributes();
-            if (attributes != null && attributes.containsKey(ATTR_SSH_KEY)) {
-                List<String> values = attributes.get(ATTR_SSH_KEY);
-                if (!values.isEmpty()) {
-                    return Optional.of(values.get(0));
-                }
-            }
-            return Optional.empty();
-        } catch (Exception e) {
-            log.error("Error fetching user SSH key from Keycloak for user {}", userId, e);
             return Optional.empty();
         }
     }

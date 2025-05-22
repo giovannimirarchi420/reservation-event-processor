@@ -35,6 +35,7 @@ public class WebhookNotifierService {
     private final ObjectMapper objectMapper;
     private final DateTimeUtils dateTimeUtils;
     private final KeycloakService keycloakService;
+    private final SshKeyService sshService;
 
     @Async // Execute webhook calls asynchronously
     public void notify(WebhookEventType eventType, Event event) {
@@ -119,7 +120,7 @@ public class WebhookNotifierService {
 
         // Fetch user SSH key from Keycloak
         try {
-            Optional<String> sshKeyOpt = keycloakService.getUserSshKey(event.getKeycloakId());
+            Optional<String> sshKeyOpt = sshService.getUserSshKey(event.getKeycloakId());
             if (sshKeyOpt.isPresent()) {
                 sshPublicKey = sshKeyOpt.get(); // Use the new variable name
                 log.debug("Found SSH key for user {}", event.getKeycloakId());
