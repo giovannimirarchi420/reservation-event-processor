@@ -74,8 +74,7 @@ public class KeycloakService {
     public Optional<UserRepresentation> getUserById(String userId) {
         try {
             log.debug("Fetching user representation for user ID '{}'", userId);
-            UserResource userResource = getRealmResource().users().get(userId);
-            UserRepresentation user = userResource.toRepresentation();
+            UserRepresentation user = getRealmResource().users().get(userId).toRepresentation();
             return Optional.ofNullable(user);
         } catch (Exception e) {
             log.error("Error fetching user representation from Keycloak for user {}", userId, e);
@@ -91,12 +90,7 @@ public class KeycloakService {
     public Optional<String> getGroupNameById(String groupId) {
         try {
             log.debug("Fetching group name for group ID '{}'", groupId);
-            GroupResource groupResource = getRealmResource().groups().group(groupId);
-            GroupRepresentation group = groupResource.toRepresentation();
-            if (group != null) {
-                return Optional.ofNullable(group.getName());
-            }
-            return Optional.empty();
+            return Optional.ofNullable(getRealmResource().groups().group(groupId).toRepresentation().getName());
         } catch (Exception e) {
             log.error("Error fetching group name from Keycloak for group ID {}", groupId, e);
             return Optional.empty();

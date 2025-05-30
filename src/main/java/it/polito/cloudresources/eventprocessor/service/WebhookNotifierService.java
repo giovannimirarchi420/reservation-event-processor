@@ -98,7 +98,7 @@ public class WebhookNotifierService {
     }
 
     private EventWebhookPayload createPayload(WebhookEventType eventType, Event event) {
-        String sshPublicKey = null; // Renamed from userSshKey
+        String sshPublicKey = null;
         String username = null;
         String email = null;
         String siteName = null;
