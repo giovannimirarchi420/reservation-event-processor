@@ -5,7 +5,7 @@
 
     <groupId>it.polito.cloudresources</groupId>
     <artifactId>reservation-event-processor</artifactId>
-    <version>0.1.11</version>
+    <version>0.1.12</version>
     <name>reservation-event-processor</name>
     <description>Service for processing reservation events</description>
     
