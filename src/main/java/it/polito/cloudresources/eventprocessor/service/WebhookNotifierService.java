@@ -9,6 +9,7 @@ import it.polito.cloudresources.eventprocessor.model.WebhookEventType;
 import it.polito.cloudresources.eventprocessor.model.dto.EventWebhookPayload;
 import it.polito.cloudresources.eventprocessor.model.dto.BatchEventWebhookPayload;
 import it.polito.cloudresources.eventprocessor.repository.WebhookConfigRepository;
+import it.polito.cloudresources.eventprocessor.repository.EventRepository;
 import it.polito.cloudresources.eventprocessor.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import java.util.Optional;
 public class WebhookNotifierService {
 
     private final WebhookConfigRepository webhookConfigRepository;
+    private final EventRepository eventRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final DateTimeUtils dateTimeUtils;
@@ -198,16 +200,32 @@ public class WebhookNotifierService {
                 .map(event -> createEventInfo(event))
                 .toList();
 
+        // Fetch currently active resources for the user
+        ZonedDateTime currentTime = dateTimeUtils.ensureTimeZone(ZonedDateTime.now());
+        List<BatchEventWebhookPayload.EventInfo> activeResourcesList = null;
+        
+        try {
+            List<Event> activeEvents = eventRepository.findActiveEventsForUser(keycloakId, currentTime);
+            activeResourcesList = activeEvents.stream()
+                    .map(event -> createEventInfo(event))
+                    .toList();
+            log.debug("Found {} active resources for user {}", activeResourcesList.size(), keycloakId);
+        } catch (Exception e) {
+            log.error("Error fetching active resources for user {}: {}", keycloakId, e.getMessage());
+            // Continue without active resources if there's an error
+        }
+
         // Build the batch payload
         return BatchEventWebhookPayload.builder()
                 .eventType(eventType)
-                .timestamp(dateTimeUtils.ensureTimeZone(ZonedDateTime.now()))
+                .timestamp(currentTime)
                 .eventCount(events.size())
                 .userId(keycloakId)
                 .username(username)
                 .email(email)
                 .sshPublicKey(sshPublicKey)
                 .events(eventInfoList)
+                .activeResources(activeResourcesList)
                 .build();
     }
 

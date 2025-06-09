@@ -17,7 +17,9 @@ The `reservation-event-processor` complements the main [reservation-be](https://
 ## ✨ Key Features
 
 *   **Event Processing:** Regularly checks for upcoming and concluded reservation events.
-*   **Webhook Notifications:** Sends notifications for `EVENT_START` and `EVENT_END` to configured external services via webhooks.
+*   **Webhook Notifications:** Sends notifications for `EVENT_START` and `EVENT_END` to configured external services via webhooks. The payload includes batch event information and currently active resources for the user.
+
+For detailed webhook payload examples and documentation, see [webhook-payload-examples.md](../webhook-payload-examples.md) in the root project directory.
 *   **Scheduling:** Uses Spring Scheduler for periodic checks.
 *   **Persistence:** Interacts with the PostgreSQL database using Spring Data JPA.
 *   **Flexible Configuration:** Configurable via environment variables or `application.properties`/`application.yml` files.

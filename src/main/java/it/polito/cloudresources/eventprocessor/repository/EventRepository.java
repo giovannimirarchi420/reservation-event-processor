@@ -42,4 +42,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findUnprocessedEventsEndingBetween(
             @Param("startDate") ZonedDateTime startDate,
             @Param("endDate") ZonedDateTime endDate);
+
+    /**
+     * Find currently active events for a user (events that have started but not yet ended).
+     */
+    @Query("SELECT e FROM Event e WHERE e.keycloakId = :keycloakId AND e.start <= :currentTime AND e.end > :currentTime")
+    List<Event> findActiveEventsForUser(
+            @Param("keycloakId") String keycloakId,
+            @Param("currentTime") ZonedDateTime currentTime);
 }

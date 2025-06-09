@@ -33,6 +33,9 @@ public class BatchEventWebhookPayload {
     // List of events
     private List<EventInfo> events;
 
+    // Currently active resources for the user (resources that are currently booked/in use)
+    private List<EventInfo> activeResources;
+
     /**
      * Individual event information within the batch
      */
