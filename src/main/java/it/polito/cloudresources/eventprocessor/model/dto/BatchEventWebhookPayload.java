@@ -20,6 +20,7 @@ import java.util.List;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null fields from JSON
 public class BatchEventWebhookPayload {
+    private String webhookId;
     private WebhookEventType eventType;
     private ZonedDateTime timestamp;
     private int eventCount; // Number of events in the batch

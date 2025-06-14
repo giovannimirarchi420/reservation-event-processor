@@ -121,12 +121,12 @@ public class WebhookNotifierService {
     }
 
     private void sendBatchWebhook(WebhookConfig webhook, WebhookEventType eventType, List<Event> events) throws JsonProcessingException {
-        BatchEventWebhookPayload payload = createBatchPayload(eventType, events);
+        BatchEventWebhookPayload payload = createBatchPayload(webhook, eventType, events);
         log.debug("Batch payload for webhook {}: {}", webhook.getName(), payload);
         String payloadJson = objectMapper.writeValueAsString(payload);
         log.debug("Batch payload JSON for webhook {}: {}", webhook.getName(), payloadJson);
         HttpHeaders headers = createHeaders(webhook, payloadJson);
-
+        
         HttpEntity<String> entity = new HttpEntity<>(payloadJson, headers);
 
         log.info("Sending batch webhook '{}' for event type {} with {} events to URL: {}", 
@@ -154,7 +154,7 @@ public class WebhookNotifierService {
         }
     }
 
-    private BatchEventWebhookPayload createBatchPayload(WebhookEventType eventType, List<Event> events) {
+    private BatchEventWebhookPayload createBatchPayload(WebhookConfig webhook, WebhookEventType eventType, List<Event> events) {
         if (events == null || events.isEmpty()) {
             throw new IllegalArgumentException("Events list cannot be null or empty");
         }
@@ -217,6 +217,7 @@ public class WebhookNotifierService {
 
         // Build the batch payload
         return BatchEventWebhookPayload.builder()
+                .webhookId(webhook.getId().toString())
                 .eventType(eventType)
                 .timestamp(currentTime)
                 .eventCount(events.size())
