@@ -51,6 +51,7 @@ public class BatchEventWebhookPayload {
         private String eventDescription;
         private ZonedDateTime eventStart;
         private ZonedDateTime eventEnd;
+        private String customParameters; // JSON string of custom parameter values
 
         // Resource Information
         private Long resourceId;

@@ -37,4 +37,7 @@ public class ResourceType extends AuditableEntity {
     @NotBlank
     private String siteId; // Keycloak Group ID representing the site
 
+    @Column(name = "custom_parameters", columnDefinition = "TEXT")
+    private String customParameters; // JSON string storing custom parameter definitions
+
 }

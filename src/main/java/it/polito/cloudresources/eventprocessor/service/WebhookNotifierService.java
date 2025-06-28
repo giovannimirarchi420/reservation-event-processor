@@ -254,7 +254,8 @@ public class WebhookNotifierService {
                 .eventTitle(event.getTitle())
                 .eventDescription(event.getDescription())
                 .eventStart(event.getStart())
-                .eventEnd(event.getEnd());
+                .eventEnd(event.getEnd())
+                .customParameters(event.getCustomParameters()); // Include custom parameters
 
         if (resource != null) {
             eventInfoBuilder = eventInfoBuilder
@@ -364,7 +365,8 @@ public class WebhookNotifierService {
                 .eventTitle(event.getTitle())
                 .eventDescription(event.getDescription())
                 .eventStart(event.getStart())
-                .eventEnd(event.getEnd());
+                .eventEnd(event.getEnd())
+                .customParameters(event.getCustomParameters()); // Include custom parameters
 
         if (resource != null) {
             payloadBuilder = payloadBuilder
