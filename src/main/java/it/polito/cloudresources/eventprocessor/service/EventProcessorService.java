@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,27 +32,21 @@ public class EventProcessorService {
         log.debug("Checking for events starting between {} and {}", now, soon);
 
         List<Event> startingEvents = eventRepository.findUnprocessedEventsStartingBetween(now, soon);
-        // Group events by user ID
-        Map<String, List<Event>> eventsByUser = startingEvents.stream()
-            .collect(Collectors.groupingBy(Event::getKeycloakId));
-
-        // Notify webhooks for EVENT_START_BATCH grouped by user
-        for (Map.Entry<String, List<Event>> entry : eventsByUser.entrySet()) {
-            String userId = entry.getKey();
-            List<Event> userEvents = entry.getValue();
-            log.debug("Notifying batch start events for user: {} with {} events", userId, userEvents.size());
-            webhookNotifierService.notify(WebhookEventType.EVENT_START, userEvents);
-            for (Event event : userEvents) {
-                log.info("Processing start event ID: {}, Resource: {}, User: {}, Start: {}",
-                        event.getId(),
-                        event.getResource().getName(),
-                        event.getKeycloakId(),
-                        dateTimeUtils.formatDateTime(event.getStart()));
-                        
-                event.setStartNotifiedAt(now); // Mark event as processed
-                log.info("Saving event (start) processed: {}", event);
-                eventRepository.save(event);
-            }
+        
+        // Process each event individually without grouping by user
+        for (Event event : startingEvents) {
+            log.info("Processing start event ID: {}, Resource: {}, User: {}, Start: {}",
+                    event.getId(),
+                    event.getResource().getName(),
+                    event.getKeycloakId(),
+                    dateTimeUtils.formatDateTime(event.getStart()));
+            
+            // Notify each event individually
+            webhookNotifierService.notify(WebhookEventType.EVENT_START, event);
+            
+            event.setStartNotifiedAt(now); // Mark event as processed
+            log.info("Saving event (start) processed: {}", event);
+            eventRepository.save(event);
         }
     }
 
@@ -71,28 +63,20 @@ public class EventProcessorService {
         if (!endingEvents.isEmpty()) {
             log.info("Found {} events ending recently:", endingEvents.size());
             
-            // Group events by user ID
-            Map<String, List<Event>> eventsByUser = endingEvents.stream()
-                .collect(Collectors.groupingBy(Event::getKeycloakId));
+            // Process each event individually without grouping by user
+            for (Event event : endingEvents) {
+                log.info("Processing end event ID: {}, Resource: {}, User: {}, End: {}",
+                        event.getId(),
+                        event.getResource().getName(),
+                        event.getKeycloakId(),
+                        dateTimeUtils.formatDateTime(event.getEnd()));
 
-            // Notify webhooks for EVENT_END grouped by user
-            for (Map.Entry<String, List<Event>> entry : eventsByUser.entrySet()) {
-                String userId = entry.getKey();
-                List<Event> userEvents = entry.getValue();
-                log.debug("Notifying batch end events for user: {} with {} events", userId, userEvents.size());
-                webhookNotifierService.notify(WebhookEventType.EVENT_END, userEvents);
+                // Notify each event individually
+                webhookNotifierService.notify(WebhookEventType.EVENT_END, event);
                 
-                for (Event event : userEvents) {
-                    log.info("Processing end event ID: {}, Resource: {}, User: {}, End: {}",
-                            event.getId(),
-                            event.getResource().getName(),
-                            event.getKeycloakId(),
-                            dateTimeUtils.formatDateTime(event.getEnd()));
-
-                    event.setEndNotifiedAt(now); // Mark event as processed
-                    log.info("Saving event (end) processed: {}", event);
-                    eventRepository.save(event);
-                }
+                event.setEndNotifiedAt(now); // Mark event as processed
+                log.info("Saving event (end) processed: {}", event);
+                eventRepository.save(event);
             }
         } else {
             log.debug("No events ending recently.");
