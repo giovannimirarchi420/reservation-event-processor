@@ -86,7 +86,7 @@ public class WebhookNotifierService {
 
 
     private void sendWebhook(WebhookConfig webhook, WebhookEventType eventType, Event event) throws JsonProcessingException {
-        EventWebhookPayload payload = createPayload(eventType, event);
+        EventWebhookPayload payload = createPayload(eventType, event, webhook.getId());
         log.debug(null, "Payload for webhook {}: {}", webhook.getName(), payload);
         String payloadJson = objectMapper.writeValueAsString(payload);
         log.debug("Payload JSON for webhook {}: {}", webhook.getName(), payloadJson);
@@ -115,7 +115,7 @@ public class WebhookNotifierService {
         }
     }
 
-    private EventWebhookPayload createPayload(WebhookEventType eventType, Event event) {
+    private EventWebhookPayload createPayload(WebhookEventType eventType, Event event, Long webhookId) {
         String sshPublicKey = null;
         String username = null;
         String email = null;
@@ -170,6 +170,7 @@ public class WebhookNotifierService {
                 .eventType(eventType)
                 .timestamp(dateTimeUtils.ensureTimeZone(ZonedDateTime.now()))
                 .eventId(event.getId().toString())
+                .webhookId(webhookId)
                 .userId(event.getKeycloakId())
                 .username(username)
                 .email(email)
@@ -178,7 +179,7 @@ public class WebhookNotifierService {
                 .eventDescription(event.getDescription())
                 .eventStart(event.getStart())
                 .eventEnd(event.getEnd())
-                .customParameters(event.getCustomParameters()); // Include custom parameters
+                .customParameters(event.getCustomParameters());
 
         if (resource != null) {
             payloadBuilder = payloadBuilder

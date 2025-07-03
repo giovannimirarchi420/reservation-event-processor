@@ -20,7 +20,8 @@ import java.time.ZonedDateTime;
 public class EventWebhookPayload {
     private WebhookEventType eventType;
     private ZonedDateTime timestamp;
-    private String eventId; // Renamed from webhookId to eventId for clarity
+    private String eventId;
+    private Long webhookId;
 
     // User Information
     private String userId;
